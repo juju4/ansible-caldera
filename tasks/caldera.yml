@@ -22,8 +22,9 @@
   with_items:
     - pip
     - setuptools
-  become: yes
-  become_user: "{{ caldera_user }}"
+# FIXME! Failed to change ownership of the temporary files Ansible needs to create despite connecting as root. Unprivileged become user would be unable to read the file.
+#  become: yes
+#  become_user: "{{ caldera_user }}"
 
 - name: ensure caldera user exists
   user:
@@ -43,8 +44,8 @@
     requirements: "{{ caldera_rootdir }}/caldera/requirements.txt"
     virtualenv: "{{ caldera_rootdir }}/env-caldera"
     virtualenv_python: "{{ python }}"
-  become: yes
-  become_user: "{{ caldera_user }}"
+#  become: yes
+#  become_user: "{{ caldera_user }}"
 
 - name: Ensure crater directory exists
   file:
