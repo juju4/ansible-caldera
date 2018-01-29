@@ -5,7 +5,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=""{{ caldera_rootdir }}/env-caldera/bin/python caldera.py"
+ExecStart="{{ caldera_home }}/env-caldera/bin/python caldera.py"
 WorkingDirectory={{ caldera_rootdir }}/caldera
 Restart=always
 RestartSec=10

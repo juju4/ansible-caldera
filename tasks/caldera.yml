@@ -13,11 +13,16 @@
     creates: /usr/bin/pip3
   when: ansible_os_family == 'RedHat'
 
+- name: ensure caldera user exists
+  user:
+    name: "{{ caldera_user }}"
+    home: "{{ caldera_home }}"
+
 - name: Ensure recent pip & setuptools in virtualenv
   pip:
     name: "{{ item }}"
     state: latest
-    virtualenv: "{{ caldera_rootdir }}/env-caldera"
+    virtualenv: "{{ caldera_home }}/env-caldera"
     virtualenv_python: "{{ python }}"
   with_items:
     - pip
@@ -25,11 +30,6 @@
 # FIXME! Failed to change ownership of the temporary files Ansible needs to create despite connecting as root. Unprivileged become user would be unable to read the file.
 #  become: yes
 #  become_user: "{{ caldera_user }}"
-
-- name: ensure caldera user exists
-  user:
-    name: "{{ caldera_user }}"
-    home: "{{ caldera_home }}"
 
 - name: git clone caldera
   git:
@@ -42,7 +42,7 @@
 - name: Install caldera pip requirements
   pip:
     requirements: "{{ caldera_rootdir }}/caldera/requirements.txt"
-    virtualenv: "{{ caldera_rootdir }}/env-caldera"
+    virtualenv: "{{ caldera_home }}/env-caldera"
     virtualenv_python: "{{ python }}"
 #  become: yes
 #  become_user: "{{ caldera_user }}"
