@@ -8,6 +8,7 @@ caldera_pkg:
   - git
   - libffi-devel
   - openssl-devel
+  - acl
 
 python: python3.4
 
