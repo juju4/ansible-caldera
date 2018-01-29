@@ -9,6 +9,7 @@ caldera_pkg:
   - libffi-devel
   - openssl-devel
   - acl
+  - initscripts
 
 python: python3.4
 
