@@ -1,0 +1,26 @@
+---
+
+- debug: var=ansible_service_mgr
+- block:
+    - name: install systemd configuration
+      template:
+        src: systemd-caldera.service.j2
+        dest: /lib/systemd/system/caldera.service
+        mode: '0644'
+        backup: yes
+      register: systemd
+    - name: reload systemd
+      systemd:
+        daemon_reload: yes
+        name: caldera
+      when: systemd.changed
+      ignore_errors: true
+#  when: ansible_service_mgr == 'systemd'
+  when: ansible_distribution_release == 'xenial' or (ansible_os_family == "RedHat" and ansible_distribution_major_version == '7')
+
+- name: enable and start up1 systemd service
+  service:
+    name: caldera
+    enabled: yes
+    state: 'started'
+  ignore_errors: true

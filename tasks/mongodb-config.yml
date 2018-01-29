@@ -1,0 +1,10 @@
+---
+
+# no default yaml module: https://github.com/kwoodson/yedit
+
+- name: configure replication set
+  lineinfile:
+    dest: /etc/mongodb.conf
+    line: 'replSet = caldera'
+    backup: yes
+

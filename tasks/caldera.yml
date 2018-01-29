@@ -1,0 +1,65 @@
+---
+
+- name: Ensure caldera dependencies are present
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ caldera_pkg }}"
+
+
+- name: RedHat | install pip with setuptools
+  command: easy_install-3.4 pip
+  args:
+    creates: /usr/bin/pip3
+  when: ansible_os_family == 'RedHat'
+
+- name: Ensure recent pip & setuptools in virtualenv
+  pip:
+    name: "{{ item }}"
+    state: latest
+    virtualenv: "{{ caldera_rootdir }}/env-caldera"
+    virtualenv_python: "{{ python }}"
+  with_items:
+    - pip
+    - setuptools
+  become: yes
+  become_user: "{{ caldera_user }}"
+
+- name: ensure caldera user exists
+  user:
+    name: "{{ caldera_user }}"
+    home: "{{ caldera_home }}"
+
+- name: git clone caldera
+  git:
+    repo: https://github.com/mitre/caldera.git
+    dest: "{{ caldera_rootdir }}"
+    update: no
+  become: yes
+  become_user: "{{ caldera_user }}"
+
+- name: Install caldera pip requirements
+  pip:
+    requirements: "{{ caldera_rootdir }}/caldera/requirements.txt"
+    virtualenv: "{{ caldera_rootdir }}/env-caldera"
+    virtualenv_python: "{{ python }}"
+  become: yes
+  become_user: "{{ caldera_user }}"
+
+- name: Ensure crater directory exists
+  file:
+    dest: "{{ caldera_rootdir }}//dep/crater/crater"
+    state: directory
+    mode: '0755'
+  become: yes
+  become_user: "{{ caldera_user }}"
+
+- name: Download MITRE pre-compiled crater agents
+  get_url:
+    url: "{{ item.u }}"
+    dest: "{{ caldera_rootdir }}//dep/crater/crater/{{ item.u | basename }}"
+    checksum: "{{ item.c }}"
+    mode: '0644'
+  with_items: "{{ caldera_crater_urls }}"
+  become: yes
+  become_user: "{{ caldera_user }}"

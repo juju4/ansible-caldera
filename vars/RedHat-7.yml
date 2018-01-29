@@ -1,0 +1,15 @@
+---
+
+caldera_pkg:
+  - python34
+  - python34-devel
+  - python34-setuptools
+  - python-virtualenv
+  - git
+  - libffi-devel
+  - openssl-devel
+
+python: python3.4
+
+mongodb_svc: mongod
+mongodb_varlib: /var/lib/mongo
