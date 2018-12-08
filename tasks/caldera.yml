@@ -21,13 +21,14 @@
 - name: Ensure recent pip & setuptools in virtualenv
   pip:
     name: "{{ item }}"
-    state: latest
+    state: present
     virtualenv: "{{ caldera_home }}/env-caldera"
     virtualenv_python: "{{ python }}"
   with_items:
     - pip
     - setuptools
-# FIXME! Failed to change ownership of the temporary files Ansible needs to create despite connecting as root. Unprivileged become user would be unable to read the file.
+# FIXME! Failed to change ownership of the temporary files Ansible needs to create despite connecting
+#       as root. Unprivileged become user would be unable to read the file.
 #  become: yes
 #  become_user: "{{ caldera_user }}"
 
@@ -35,6 +36,7 @@
   git:
     repo: https://github.com/mitre/caldera.git
     dest: "{{ caldera_rootdir }}"
+    version: HEAD
     update: no
   become: yes
   become_user: "{{ caldera_user }}"

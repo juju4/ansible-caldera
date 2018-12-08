@@ -7,4 +7,3 @@
     dest: /etc/mongodb.conf
     line: 'replSet = caldera'
     backup: yes
-

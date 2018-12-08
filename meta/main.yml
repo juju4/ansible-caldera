@@ -1,5 +1,6 @@
 ---
 galaxy_info:
+  role_name: caldera
   author: juju4
   description: setup MITRE Caldera - server
   license: BSD
@@ -25,4 +26,4 @@ galaxy_info:
   - system
   - security
 dependencies:
-  - juju4.redhat-epel
+  - juju4.redhat_epel
