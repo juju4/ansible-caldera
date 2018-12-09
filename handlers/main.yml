@@ -1,0 +1,9 @@
+---
+
+- name: RedHat7 | reload systemd
+  systemd:
+    daemon_reload: yes
+    name: "{{ mongodb_svc }}"
+  when: >
+    (ansible_os_family == 'RedHat' and ansible_distribution_version.split(".")[0] == '7') and
+    not (ansible_virtualization_type is defined and (ansible_virtualization_type == "docker"))
