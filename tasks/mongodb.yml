@@ -51,7 +51,7 @@
   when: ansible_os_family == "RedHat"
 
 - name: apt | Install mongodb
-  apt: name=mongo-db state=present update_cache=yes cache_valid_time=3600
+  apt: name=mongodb-org state=present update_cache=yes cache_valid_time=3600
   when: ansible_os_family == 'Debian'
   register: pkg_result
   until: pkg_result is success
