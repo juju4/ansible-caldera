@@ -6,6 +6,8 @@
       apt_key:
         keyserver: hkp://keyserver.ubuntu.com:80
         id: 9DA31620334BD75D9DCB49F368818C72E52529D4
+      register: pkg_result
+      until: pkg_result is success
     - name: Debian | Add Mongodb repository
       apt_repository:
         repo: >
