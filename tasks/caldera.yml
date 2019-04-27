@@ -65,6 +65,7 @@
     version: "{{ caldera_version }}"
     update: true
     recursive: true
+    force: true
   become: yes
   become_user: "{{ caldera_user }}"
   when: gitm.stat.exists
