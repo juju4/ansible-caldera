@@ -46,11 +46,17 @@
   become: yes
   become_user: "{{ caldera_user }}"
 
+- name: check if gitmodules file
+  stat:
+    path: "{{ caldera_rootdir }}/.gitmodules"
+  register: gitm
+
 - name: update gitmodules for anonymous http retrieval
   replace:
-    dest: "{{ caldera_rootdir }}/caldera/.gitmodules"
+    dest: "{{ caldera_rootdir }}/.gitmodules"
     regexp: "git@github.com:"
     replace: "https://github.com/"
+  when: gitm.stat.exists
 
 - name: git clone caldera with submodules
   git:
@@ -61,6 +67,7 @@
     recursive: true
   become: yes
   become_user: "{{ caldera_user }}"
+  when: gitm.stat.exists
 
 - name: Install caldera pip requirements
   pip:
