@@ -62,7 +62,6 @@
   become: yes
   become_user: "{{ caldera_user }}"
 
-- name: update gitmodules for anonymous http retrieval
 - name: Install caldera pip requirements
   pip:
     requirements: "{{ caldera_rootdir }}/caldera/requirements.txt"
