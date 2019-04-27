@@ -48,7 +48,7 @@
 
 - name: update gitmodules for anonymous http retrieval
   replace:
-    dest: "{{ caldera_rootdir }}/.gitmodules"
+    dest: "{{ caldera_rootdir }}/caldera/.gitmodules"
     regexp: "git@github.com:"
     replace: "https://github.com/"
 
