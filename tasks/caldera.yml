@@ -41,10 +41,28 @@
     repo: https://github.com/mitre/caldera.git
     dest: "{{ caldera_rootdir }}"
     version: "{{ caldera_version }}"
-    update: no
+    update: false
+    recursive: false
   become: yes
   become_user: "{{ caldera_user }}"
 
+- name: update gitmodules for anonymous http retrieval
+  replace:
+    dest: "{{ caldera_rootdir }}/.gitmodules"
+    regexp: "git@github.com:"
+    replace: "https://github.com/"
+
+- name: git clone caldera with submodules
+  git:
+    repo: https://github.com/mitre/caldera.git
+    dest: "{{ caldera_rootdir }}"
+    version: "{{ caldera_version }}"
+    update: true
+    recursive: true
+  become: yes
+  become_user: "{{ caldera_user }}"
+
+- name: update gitmodules for anonymous http retrieval
 - name: Install caldera pip requirements
   pip:
     requirements: "{{ caldera_rootdir }}/caldera/requirements.txt"
