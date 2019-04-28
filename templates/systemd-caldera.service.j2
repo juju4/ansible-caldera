@@ -17,7 +17,11 @@ RestartSec=10
 StandardOutput=syslog
 SyslogIdentifier=caldera
 User={{ caldera_user }}
+{% if ansible_os_family == 'RedHat' %}
 Group=nobody
+{% else %}
+Group=nogroup
+{% endif %}
 PrivateTmp=true
 
 [Install]
