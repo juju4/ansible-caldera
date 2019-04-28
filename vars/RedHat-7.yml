@@ -17,3 +17,4 @@ pip: /usr/local/bin/pip3
 
 mongodb_svc: mongod
 mongodb_varlib: /var/lib/mongo
+mongodb_conf: /etc/mongodb.conf
