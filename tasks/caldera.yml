@@ -119,3 +119,5 @@
     dest: "{{ caldera_rootdir }}/dep/crater/crater/CraterMain.exe"
     state: link
 
+- include: caldera-v1.yml
+  when: caldera_version == '63e50b9629b9a78b5a279891300721d5dd4311ea'
