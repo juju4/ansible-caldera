@@ -6,10 +6,10 @@ After=network.target
 [Service]
 Type=simple
 {% if caldera_version == '63e50b9629b9a78b5a279891300721d5dd4311ea' %}
-ExecStart="{{ caldera_home }}/env-caldera/bin/python {{ caldera_rootdir }}/caldera/caldera.py"
+ExecStart={{ caldera_home }}/env-caldera/bin/python {{ caldera_rootdir }}/caldera/caldera.py
 WorkingDirectory={{ caldera_rootdir }}/caldera
 {% else %}
-ExecStart="{{ caldera_home }}/env-caldera/bin/python {{ caldera_rootdir }}/server.py -E local"
+ExecStart={{ caldera_home }}/env-caldera/bin/python {{ caldera_rootdir }}/server.py -E local
 WorkingDirectory={{ caldera_rootdir }}
 {% endif %}
 Restart=always
