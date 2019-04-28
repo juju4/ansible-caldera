@@ -85,6 +85,16 @@
 #  become_user: "{{ caldera_user }}"
   register: pkg_result
   until: pkg_result is success
+  when: not gitm.stat.exists
+
+- name: Install caldera pip requirements
+  pip:
+    requirements: "{{ caldera_rootdir }}/requirements.txt"
+    virtualenv: "{{ caldera_home }}/env-caldera"
+    virtualenv_python: "{{ python }}"
+  register: pkg_result
+  until: pkg_result is success
+  when: gitm.stat.exists
 
 - name: Ensure crater directory exists
   file:
