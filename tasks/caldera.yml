@@ -97,7 +97,7 @@
 
 - name: Ensure crater directory exists
   file:
-    dest: "{{ caldera_rootdir }}//dep/crater/crater"
+    dest: "{{ caldera_rootdir }}/dep/crater/crater"
     state: directory
     mode: '0755'
   become: yes
@@ -106,9 +106,16 @@
 - name: Download MITRE pre-compiled crater agents
   get_url:
     url: "{{ item.u }}"
-    dest: "{{ caldera_rootdir }}//dep/crater/crater/{{ item.u | basename }}"
+    dest: "{{ caldera_rootdir }}/dep/crater/crater/{{ item.u | basename }}"
     checksum: "{{ item.c }}"
     mode: '0644'
   with_items: "{{ caldera_crater_urls }}"
   become: yes
   become_user: "{{ caldera_user }}"
+
+- name: Set default CraterMain.exe
+  file:
+    src: "{{ caldera_rootdir }}/dep/crater/crater/CraterMainWin8up.exe"
+    dest: "{{ caldera_rootdir }}/dep/crater/crater/CraterMain.exe"
+    state: link
+
