@@ -100,5 +100,7 @@
     dest: "{{ mongodb_varlib }}"
     mode: '0750'
 
+- include: mongodb-config.yml
+
 - name: enable service mongodb
   service: name={{ mongodb_svc }} enabled=yes state=started
