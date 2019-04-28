@@ -60,15 +60,21 @@
 
 - name: git clone caldera with submodules
   git:
-    repo: https://github.com/mitre/caldera.git
-    dest: "{{ caldera_rootdir }}"
-    version: "{{ caldera_version }}"
+    repo: "https://github.com/mitre/{{ item }}.git"
+    dest: "{{ caldera_rootdir }}/plugins/{{ item }}"
+    version: HEAD
     update: true
     recursive: true
     force: true
   become: yes
   become_user: "{{ caldera_user }}"
   when: gitm.stat.exists
+  with_items:
+    - adversary
+    - chain
+    - gui
+    - sandcat
+    - stockpile
 
 - name: Install caldera pip requirements
   pip:
