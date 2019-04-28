@@ -71,8 +71,11 @@ script:
 ## travis/docker: Errno::EROFS: Read-only file system @ dir_s_mkdir - /etc/ansible/roles/juju4.caldera/test/integration/${suite}/serverspec/.bundle
 #  - 'sudo docker exec --tty "$(cat ${container_id})" /etc/ansible/roles/juju4.caldera/test/integration/${suite}/serverspec/run-local-tests.sh'
 
-after_failure:
+after_script:
+  - 'docker exec --tty "$(cat ${container_id})" env TERM=xterm ls -la /var/_caldera/'
   - 'docker exec --tty "$(cat ${container_id})" env TERM=xterm ls -la /var/_caldera/caldera/'
+
+after_failure:
   - 'docker exec --tty "$(cat ${container_id})" env TERM=xterm systemctl -l --no-pager status mongod.service'
   - 'docker exec --tty "$(cat ${container_id})" env TERM=xterm systemctl -l --no-pager status caldera.service'
   - 'docker exec "$(cat ${container_id})" journalctl -xe --no-pager'
