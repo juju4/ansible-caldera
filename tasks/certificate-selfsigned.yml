@@ -18,7 +18,7 @@
 
 - name: Validate private key file permissions
   file:
-    path: "{{ caldera_certinfo }}/CN={{ ansible_fqdn }}"
+    path: "{{ caldera_rootdir }}/caldera/conf/key.pem"
     owner: "{{ caldera_user }}"
     group: "{{ caldera_user }}"
     mode: '0440'
