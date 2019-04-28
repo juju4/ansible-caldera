@@ -1,9 +1,9 @@
 ---
 
 caldera_pkg:
-  - python34
-  - python34-devel
-  - python34-setuptools
+  - python36
+  - python36-devel
+  - python36-setuptools
   - python-virtualenv
   - git
   - libffi-devel
@@ -11,7 +11,7 @@ caldera_pkg:
   - acl
   - initscripts
 
-python: python3.4
+python: python3.6
 
 mongodb_svc: mongod
 mongodb_varlib: /var/lib/mongo
