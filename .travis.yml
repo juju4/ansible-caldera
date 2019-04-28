@@ -23,6 +23,12 @@ env:
 #    version: 12.04
 #  - distribution: alpine
 #    version: 3.4
+  - distribution: centos
+    version: 7
+    suite: default-HEAD
+  - distribution: ubuntu
+    version: 18.04
+    suite: default-HEAD
 
 before_install:
   - env
