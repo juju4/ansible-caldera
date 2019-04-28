@@ -13,6 +13,7 @@ caldera_pkg:
 
 python: python3.6
 easy_install: easy_install-3.6
+pip: /usr/bin/pip36
 
 mongodb_svc: mongod
 mongodb_varlib: /var/lib/mongo

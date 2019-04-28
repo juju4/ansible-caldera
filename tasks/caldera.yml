@@ -11,7 +11,7 @@
 - name: RedHat | install pip with setuptools
   command: "{{ easy_install }} pip"
   args:
-    creates: /usr/bin/pip3
+    creates: "{{ pip }}"
   when: ansible_os_family == 'RedHat'
 
 - name: ensure caldera user exists
