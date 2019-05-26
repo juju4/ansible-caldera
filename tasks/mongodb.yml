@@ -105,3 +105,9 @@
 - name: enable service mongodb
   service: name={{ mongodb_svc }} enabled=yes state=started
   when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")
+
+- name: Docker | start mongodb
+  command: /usr/bin/mongod --quiet --config /etc/mongod.conf
+  become: yes
+  become_user: mongodb
+  when: (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")
