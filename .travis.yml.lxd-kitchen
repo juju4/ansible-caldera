@@ -23,6 +23,12 @@ env:
 #    version: 12.04
 #  - distribution: alpine
 #    version: 3.4
+  - distribution: centos
+    version: 7
+    suite: default-HEAD
+  - distribution: ubuntu
+    version: 18.04
+    suite: default-HEAD
 
 before_install:
   - env
@@ -88,13 +94,23 @@ script:
 
 after_script:
   - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'cat /tmp/idempotency.test'"
+  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'cat /etc/mongod.conf'"
+  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'cat /etc/mongodb.conf'"
+  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'cat /lib/systemd/system/caldera.service'"
+  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'cat /var/_caldera/caldera/conf/local.yml'"
+  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'ls /usr/bin/'"
+  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'ls /usr/local/bin/'"
   - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'ls -la /var/_caldera/'"
   - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'ls -la /var/_caldera/caldera/'"
+  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'ls -la /var/_caldera/caldera/caldera/'"
+  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'ls -la /var/_caldera/env-caldera/bin/'"
   - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c '/var/_caldera/env-caldera/bin/pip freeze'"
+  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'curl -vk http://localhost:8888'"
+#  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'curl -vk http://localhost:8880'"
   - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'systemctl -l --no-pager status caldera'"
   - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'systemctl -l --no-pager status mongodb'"
   - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'systemctl -l --no-pager status mongod'"
-  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'ps axu'"
+  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'ps axuw'"
   - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'netstat -anp'"
   - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'ss -nlp'"
   - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'systemctl -l --no-pager status'"
