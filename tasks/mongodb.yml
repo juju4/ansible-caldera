@@ -107,5 +107,6 @@
   when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")
 
 - name: Docker | start mongodb
-  command: /usr/bin/mongod --quiet --config /etc/mongod.conf --fork
+  command: sudo -u mongodb /usr/bin/mongod --quiet --config /etc/mongod.conf --fork
+  ignore_errors: true
   when: (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")
