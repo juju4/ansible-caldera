@@ -28,8 +28,8 @@
   when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")
 
 - name: Docker | start caldera HEAD
-  command: >
-    {{ caldera_home }}/env-caldera/bin/python {{ caldera_rootdir }}/server.py -E local
+  shell: >
+    {{ caldera_home }}/env-caldera/bin/python {{ caldera_rootdir }}/server.py -E local &
   args:
     chdir: "{{ caldera_rootdir }}"
   when:
@@ -37,8 +37,8 @@
     - caldera_version != '63e50b9629b9a78b5a279891300721d5dd4311ea'
 
 - name: Docker | start caldera v1
-  command: >
-    {{ caldera_home }}/env-caldera/bin/python {{ caldera_rootdir }}/caldera/caldera.py
+  shell: >
+    {{ caldera_home }}/env-caldera/bin/python {{ caldera_rootdir }}/caldera/caldera.py &
   args:
     chdir: "{{ caldera_rootdir }}/caldera"
   when:
