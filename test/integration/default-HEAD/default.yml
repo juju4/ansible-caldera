@@ -2,6 +2,6 @@
 
 - hosts: all
   vars:
-    - caldera_version: HEAD
+    - caldera_version: minor-fix
   roles:
     - juju4.caldera
