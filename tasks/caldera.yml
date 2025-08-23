@@ -37,6 +37,12 @@
   register: pkg_result
   until: pkg_result is success
 
+- name: Ensure right permissions for env-caldera
+  ansible.builtin.file:
+    path: "{{ caldera_home }}/env-caldera"
+    owner: "{{ caldera_user }}"
+    recurse: true
+
 - name: Clone caldera repo
   ansible.builtin.git:
     repo: https://github.com/mitre/caldera.git
