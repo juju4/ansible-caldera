@@ -19,7 +19,7 @@ jobs:
       ANSIBLE_CALLBACKS_ENABLED: profile_tasks
       ANSIBLE_EXTRA_VARS: ""
       ANSIBLE_ROLE: juju4.caldera
-      SUITE: default
+      SUITE: default-nginx
 
     steps:
       - name: Checkout code
