@@ -1,48 +1,38 @@
 ---
 
-- debug: var=ansible_service_mgr
-- block:
-    - name: install systemd configuration
-      template:
-        src: systemd-caldera.service.j2
-        dest: /lib/systemd/system/caldera.service
-        mode: '0644'
-        backup: yes
-      register: systemd
-    - name: reload systemd
-      systemd:
-        daemon_reload: yes
-        name: caldera
-      when: systemd.changed
-      ignore_errors: true
+- name: Debug | ansible_service_mgr
+  ansible.builtin.debug:
+    var: ansible_service_mgr
+
+- name: Systemd
   when: >
     (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int >= 16) or
     (ansible_os_family == "RedHat" and ansible_distribution_major_version|int >= 7)
+  block:
+    - name: Install systemd configuration
+      ansible.builtin.template:
+        src: systemd-caldera.service.j2
+        dest: /lib/systemd/system/caldera.service
+        mode: '0644'
+        backup: true
+      register: systemd
+      notify:
+        - Reload systemd
 
-- name: enable and start caldera systemd service
-  service:
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Enable and start caldera systemd service
+  ansible.builtin.service:
     name: caldera
-    enabled: yes
+    enabled: true
     state: 'started'
-  ignore_errors: true
   when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")
 
 - name: Docker | start caldera HEAD
-  shell: >
-    {{ caldera_home }}/env-caldera/bin/python {{ caldera_rootdir }}/server.py -E local &
+  ansible.builtin.shell:  # noqa no-changed-when
+    cmd: nohup {{ caldera_home }}/env-caldera/bin/python {{ caldera_rootdir }}/server.py --build &
   args:
     chdir: "{{ caldera_rootdir }}"
-  ignore_errors: true
   when:
     - (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")
-    - caldera_version != '63e50b9629b9a78b5a279891300721d5dd4311ea'
-
-- name: Docker | start caldera v1
-  shell: >
-    {{ caldera_home }}/env-caldera/bin/python {{ caldera_rootdir }}/caldera/caldera.py &
-  args:
-    chdir: "{{ caldera_rootdir }}/caldera"
-  ignore_errors: true
-  when:
-    - (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")
-    - caldera_version == '63e50b9629b9a78b5a279891300721d5dd4311ea'

@@ -12,7 +12,3 @@ caldera_pkg:
   - acl
 
 python: python3
-
-mongodb_svc: mongod
-mongodb_varlib: /var/lib/mongodb
-mongodb_conf: /etc/mongod.conf

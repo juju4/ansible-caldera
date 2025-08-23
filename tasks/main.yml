@@ -1,14 +1,19 @@
 ---
 
-- name: Include version-specific variables for Ubuntu.
-  include_vars: "{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
-  when: ansible_os_family == "Debian"
-- name: Include version-specific variables for RedHat
-  include_vars: "RedHat-{{ ansible_distribution_version.split('.')[0] }}.yml"
-  when: ansible_os_family == "RedHat"
+- name: Include variables
+  ansible.builtin.include_vars: "{{ lookup('ansible.builtin.first_found', params) }}"
+  vars:
+    params:
+      files:
+        - "{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+        - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+        - '{{ ansible_distribution }}.yml'
+        - '{{ ansible_os_family }}.yml'
+      paths:
+        - 'vars'
 
-- include: caldera.yml
+- name: Import caldera
+  ansible.builtin.import_tasks: caldera.yml
 
-- include: mongodb.yml
-
-- include: daemonize.yml
+- name: Import daemonize
+  ansible.builtin.import_tasks: daemonize.yml

@@ -1,20 +1,15 @@
 {{ ansible_managed | comment }}
+
 [Unit]
 Description=MITRE Caldera automated adversary emulation system
 After=network.target
 
 [Service]
 Type=simple
-{% if caldera_version == '63e50b9629b9a78b5a279891300721d5dd4311ea' %}
-ExecStart={{ caldera_home }}/env-caldera/bin/python {{ caldera_rootdir }}/caldera/caldera.py
-WorkingDirectory={{ caldera_rootdir }}/caldera
-{% else %}
-ExecStart={{ caldera_home }}/env-caldera/bin/python {{ caldera_rootdir }}/server.py -E local
+ExecStart={{ caldera_home }}/env-caldera/bin/python {{ caldera_rootdir }}/server.py
 WorkingDirectory={{ caldera_rootdir }}
-{% endif %}
 Restart=always
 RestartSec=10
-StandardOutput=syslog
 SyslogIdentifier=caldera
 User={{ caldera_user }}
 {% if ansible_os_family == 'RedHat' %}
@@ -22,7 +17,93 @@ Group=nobody
 {% else %}
 Group=nogroup
 {% endif %}
+
+# Reduce Attack Surface
+# Exposure level: 2.1
+NoNewPrivileges=true
 PrivateTmp=true
+ProtectHome=yes
+# ProtectSystem=yes
+ProtectSystem=strict
+ProtectProc=noaccess
+
+PrivateDevices=yes
+DeviceAllow=
+
+PrivateUsers=yes
+
+UMask=077
+
+InaccessiblePaths=/proc
+RemoveIPC=true
+
+ProtectKernelTunables=true
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectHostname=yes
+ProtectClock=yes
+ProtectControlGroups=yes
+
+ProtectControlGroups=true
+LockPersonality=true
+RestrictRealtime=true
+RestrictNamespaces=yes
+# RestrictNamespaces=~CLONE_NEWCGROUP CLONE_NEWIPC CLONE_NEWNET CLONE_NEWPID
+RestrictSUIDSGID=yes
+MemoryDenyWriteExecute=yes
+
+# PrivateNetwork=yes
+RestrictAddressFamilies=AF_INET AF_INET6
+RestrictAddressFamilies=~AF_UNIX
+
+IPAccounting=yes
+{% if caldera_webproxy_ip is defined and caldera_webproxy_ip | length > 0 %}
+IPAddressAllow=localhost link-local multicast 10.0.0.0/8 192.168.0.0/16 {{ caldera_web_proxy_ip }}
+{% else %}
+IPAddressAllow=localhost link-local multicast 10.0.0.0/8 192.168.0.0/16
+{% endif %}
+
+CapabilityBoundingSet=~CAP_AUDIT_CONTROL CAP_AUDIT_READ CAP_DAC_READ_SEARCH
+CapabilityBoundingSet=~CAP_BLOCK_SUSPEND
+CapabilityBoundingSet=~CAP_BPF
+CapabilityBoundingSet=~CAP_CHOWN
+CapabilityBoundingSet=~CAP_DAC_* CAP_FOWNER CAP_IPC_OWNER
+CapabilityBoundingSet=~CAP_FSETID CAP_SETFCAP
+CapabilityBoundingSet=~CAP_IPC_LOCK
+CapabilityBoundingSet=~CAP_KILL
+CapabilityBoundingSet=~CAP_LEASE
+CapabilityBoundingSet=~CAP_LINUX_IMMUTABLE
+CapabilityBoundingSet=~CAP_NET_ADMIN
+CapabilityBoundingSet=~CAP_NET_BIND_SERVICE CAP_NET_BROADCAST
+CapabilityBoundingSet=~CAP_NET_RAW
+CapabilityBoundingSet=~CAP_SETPCAP
+CapabilityBoundingSet=~CAP_SETUID CAP_SETGID
+CapabilityBoundingSet=~CAP_SYS_ADMIN
+CapabilityBoundingSet=~CAP_SYS_BOOT
+CapabilityBoundingSet=~CAP_SYS_CHROOT
+CapabilityBoundingSet=~CAP_SYS_NICE CAP_SYS_RESOURCE
+CapabilityBoundingSet=~CAP_SYS_PACCT
+CapabilityBoundingSet=~CAP_SYS_PTRACE
+CapabilityBoundingSet=~CAP_SYS_RAWIO
+CapabilityBoundingSet=~CAP_SYS_TTY_CONFIG
+
+{% if not (ansible_virtualization_type is defined and
+          ansible_virtualization_type == "docker"
+        )
+%}
+SystemCallFilter=@system-service
+SystemCallFilter=~@debug @mount @cpu-emulation @obsolete @privileged @resources @reboot @swap @raw-io @module
+# SystemCallFilter=~@debug @mount @cpu-emulation @obsolete @resources @reboot @swap @raw-io @module
+# When system call is disallowed, return error code instead of killing process
+SystemCallErrorNumber=EPERM
+{% endif %}
+SystemCallArchitectures=native
+
+{% if caldera_cgroups_restriction_enable | bool %}
+CPUWeight={{ caldera_cgroups_cpushares | default('1024') }}
+CPUQuota={{ caldera_cgroups_cpuquota | default('80%') }}
+MemoryMax={{ caldera_cgroups_memorylimit | default('4G') }}
+{% endif %}
 
 [Install]
 WantedBy=multi-user.target

@@ -1,7 +1,8 @@
 ---
 
-- hosts: all
+- name: Test play
+  hosts: all
   vars:
-    - caldera_version: HEAD
+    caldera_version: HEAD
   roles:
     - juju4.caldera

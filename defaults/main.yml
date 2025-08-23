@@ -1,26 +1,15 @@
 ---
 
-# v1
-caldera_version: 63e50b9629b9a78b5a279891300721d5dd4311ea
-# v2
-#caldera_version: HEAD
+# 5.3.0
+caldera_version: b24f6e7a99cab19cbf417009bda9b9c6c81abc31
+# caldera_version: HEAD
+caldera_repo_update: false
 caldera_user: _caldera
 caldera_home: /var/_caldera
 caldera_rootdir: /var/_caldera/caldera
-caldera_crater_urls:
-  - { u: 'https://github.com/mitre/caldera-crater/releases/download/v0.1.0/CraterMainWin7.exe', c: 'sha256:69132ce0f900168d92a1af76be9aa62862ac4c5cf27915fcf232ae27a002e14c' }
-  - { u: 'https://github.com/mitre/caldera-crater/releases/download/v0.1.0/CraterMainWin8up.exe', c: 'sha256:cac77800ac37805a6acf0e73a7508ef7b46fb01837359ea1cb10887bb8531469' }
-  - { u: 'https://download.microsoft.com/download/9/3/F/93FCF1E7-E6A4-478B-96E7-D4B285925B00/vc_redist.x64.exe', c: 'sha256:5eea714e1f22f1875c1cb7b1738b0c0b1f02aec5ecb95f0fdb1c5171c6cd93a3' }
-  - { u: 'https://github.com/mitre/caldera-agent/releases/download/v0.1.0/cagent.exe', c: 'sha256:a7a2269db0b90815390b8986b706212647506dfb988798b937ebf1b92e188d41' }
 
-caldera_certinfo: '/C=US/ST=CA/L=San Francisco/O=Ansible'
-caldera_certduration: 3652
-mhn_mongodb_host: localhost
-mhn_mongodb_port: 27017
-## pull request #235 // Work in progress
-mhn_mongodb_auth: false
-mhn_mongodb_adminuser: mongodb_admin
-mhn_mongodb_adminpass: mongodb_password_to_change
-mhn_mongodb_user: mongodb_user
-mhn_mongodb_pass: mongodb_password_to_change
-mhn_mongodb_auth_mechanism: MONGODB-CR
+caldera_upx_version: 5.0.2
+
+caldera_cgroups_restriction_enable: true
+# if web proxy to allow in systemd IPAddressAllow list
+# caldera_webproxy_ip:

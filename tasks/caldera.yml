@@ -1,26 +1,28 @@
 ---
 
 - name: Ensure caldera dependencies are present
-  package:
-    name: "{{ item }}"
+  ansible.builtin.package:
+    name: "{{ caldera_pkg }}"
     state: present
-  with_items: "{{ caldera_pkg }}"
   register: pkg_result
   until: pkg_result is success
 
+- name: Import upx
+  ansible.builtin.import_tasks: upx.yml
+
 - name: RedHat | install pip with setuptools
-  command: "{{ easy_install }} pip"
+  ansible.builtin.command: "{{ easy_install }} pip"
   args:
     creates: "{{ pip }}"
   when: ansible_os_family == 'RedHat'
 
-- name: ensure caldera user exists
-  user:
+- name: Ensure caldera user exists
+  ansible.builtin.user:
     name: "{{ caldera_user }}"
     home: "{{ caldera_home }}"
 
 - name: Ensure recent pip & setuptools in virtualenv
-  pip:
+  ansible.builtin.pip:
     name: "{{ item }}"
     state: present
     virtualenv: "{{ caldera_home }}/env-caldera"
@@ -35,89 +37,36 @@
   register: pkg_result
   until: pkg_result is success
 
-- name: git clone caldera
-  git:
+- name: Clone caldera repo
+  ansible.builtin.git:
     repo: https://github.com/mitre/caldera.git
     dest: "{{ caldera_rootdir }}"
     version: "{{ caldera_version }}"
-    update: false
-    recursive: false
-  become: yes
-  become_user: "{{ caldera_user }}"
-
-- name: check if gitmodules file
-  stat:
-    path: "{{ caldera_rootdir }}/.gitmodules"
-  register: gitm
-
-- name: update gitmodules for anonymous http retrieval
-  replace:
-    dest: "{{ caldera_rootdir }}/.gitmodules"
-    regexp: "git@github.com:"
-    replace: "https://github.com/"
-  when: gitm.stat.exists
-
-- name: git clone caldera with submodules
-  git:
-    repo: "https://github.com/mitre/{{ item }}.git"
-    dest: "{{ caldera_rootdir }}/plugins/{{ item }}"
-    version: HEAD
-    update: true
+    update: "{{ caldera_repo_update }}"
     recursive: true
-    force: true
-  become: yes
+  become: true
   become_user: "{{ caldera_user }}"
-  when: gitm.stat.exists
-  with_items:
-    - adversary
-    - chain
-    - gui
-    - sandcat
-    - stockpile
 
 - name: Install caldera pip requirements
-  pip:
-    requirements: "{{ caldera_rootdir }}/caldera/requirements.txt"
-    virtualenv: "{{ caldera_home }}/env-caldera"
-    virtualenv_python: "{{ python }}"
-#  become: yes
-#  become_user: "{{ caldera_user }}"
-  register: pkg_result
-  until: pkg_result is success
-  when: not gitm.stat.exists
-
-- name: Install caldera pip requirements
-  pip:
+  ansible.builtin.pip:
     requirements: "{{ caldera_rootdir }}/requirements.txt"
     virtualenv: "{{ caldera_home }}/env-caldera"
     virtualenv_python: "{{ python }}"
+  become: yes
+  become_user: "{{ caldera_user }}"
   register: pkg_result
   until: pkg_result is success
-  when: gitm.stat.exists
 
-- name: Ensure crater directory exists
-  file:
-    dest: "{{ caldera_rootdir }}/dep/crater/crater"
-    state: directory
-    mode: '0755'
+- name: Build caldera server
+  ansible.builtin.command:
+    cmd: "{{ caldera_home }}/env-caldera/bin/python server.py --build"
+  args:
+    chdir: "{{ caldera_rootdir }}"
+    creates: "{{ caldera_rootdir }}/conf/local.yml"
   become: yes
   become_user: "{{ caldera_user }}"
-
-- name: Download MITRE pre-compiled crater agents
-  get_url:
-    url: "{{ item.u }}"
-    dest: "{{ caldera_rootdir }}/dep/crater/crater/{{ item.u | basename }}"
-    checksum: "{{ item.c }}"
-    mode: '0644'
-  with_items: "{{ caldera_crater_urls }}"
-  become: yes
-  become_user: "{{ caldera_user }}"
-
-- name: Set default CraterMain.exe
-  file:
-    src: "{{ caldera_rootdir }}/dep/crater/crater/CraterMainWin8up.exe"
-    dest: "{{ caldera_rootdir }}/dep/crater/crater/CraterMain.exe"
-    state: link
-
-- include: caldera-v1.yml
-  when: caldera_version == '63e50b9629b9a78b5a279891300721d5dd4311ea'
+  # command both building and listening
+  timeout: 60
+  # not working, using ignore_errors
+  # failed_when: false
+  ignore_errors: true  # noqa ignore-errors

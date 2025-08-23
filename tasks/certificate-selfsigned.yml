@@ -1,14 +1,18 @@
 ---
 # https://github.com/mitre/caldera/issues/48
 
-- name: apt | self-signed certificate packages dependencies
-  apt: name=ssl-cert state=present update_cache=yes cache_valid_time=3600
+- name: Debian | self-signed certificate packages dependencies
+  ansible.builtin.apt:
+    name: ssl-cert
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   register: pkg_result
   until: pkg_result is success
 
 - name: Generate SSL self-signed certificate
-  command: >
+  ansible.builtin.command: >
     openssl req -x509 -nodes -sha256 -days {{ caldera_certduration }} -newkey rsa:2048
         -subj "{{ caldera_certinfo }}/CN={{ ansible_fqdn }}"
         -keyout {{ caldera_rootdir }}/caldera/conf/key.pem
@@ -17,7 +21,7 @@
     creates: "{{ caldera_rootdir }}/caldera/conf/cert.pem"
 
 - name: Validate private key file permissions
-  file:
+  ansible.builtin.file:
     path: "{{ caldera_rootdir }}/caldera/conf/key.pem"
     owner: "{{ caldera_user }}"
     group: "{{ caldera_user }}"

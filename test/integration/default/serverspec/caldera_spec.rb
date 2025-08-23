@@ -11,7 +11,7 @@ describe process("python") do
   it { should be_running }
 end
 
-describe service('caldera') do  
+describe service('caldera') do
   it { should be_enabled }
   it { should be_running }
 end
@@ -22,4 +22,3 @@ end
 describe file('/var/_caldera/caldera/caldera/caldera.py') do
   it { should exist }
 end
-
