@@ -13,3 +13,5 @@ caldera_upx_version: 5.0.2
 caldera_cgroups_restriction_enable: true
 # if web proxy to allow in systemd IPAddressAllow list
 # caldera_webproxy_ip:
+
+is_container: false

@@ -18,6 +18,7 @@
       register: systemd
       notify:
         - Reload systemd
+        - Restart caldera
 
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
@@ -27,7 +28,8 @@
     name: caldera
     enabled: true
     state: 'started'
-  when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")
+  when:
+    - not is_container | bool
 
 - name: Docker | start caldera HEAD
   ansible.builtin.shell:  # noqa no-changed-when
