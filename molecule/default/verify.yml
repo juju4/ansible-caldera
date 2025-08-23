@@ -1,0 +1,114 @@
+---
+
+- name: Verify
+  hosts: "{{ playbook_hosts | default('caldera_group') }}"
+  vars:
+    caldera_home: /var/_caldera
+    caldera_bin: /var/_caldera/caldera/server.py
+    config: /var/_caldera/caldera/conf/local.yml
+    ports:
+      # web ui
+      - { h: 0.0.0.0, p: 8888 }
+    verify_users:
+      - red
+      - blue
+    url: http://localhost:8888
+    api_url: http://localhost:8888/api/rest
+    is_container: false
+  pre_tasks:
+    - name: Debug | var ansible_virtualization_type
+      ansible.builtin.debug:
+        var: ansible_virtualization_type
+    - name: Set fact is_container
+      ansible.builtin.set_fact:
+        is_container: true
+      when: >
+        (ansible_virtualization_type is defined and
+          (ansible_virtualization_type == "docker"
+           or ansible_virtualization_type == "containerd"
+           or ansible_virtualization_type == "container"
+          )
+        )
+  tasks:
+
+    - name: Check caldera binary
+      ansible.builtin.stat:
+        path: "{{ caldera_bin }}"
+      register: bin1
+      become: true
+    - name: Validate caldera binary is present
+      ansible.builtin.assert:
+        that: bin1.stat.exists and bin1.stat.size != 0 and bin1.stat.mode == '0664'
+
+    - name: Check config file
+      ansible.builtin.stat:
+        path: "{{ config }}"
+      register: cfg1
+      become: true
+    - name: Validate configuration file is present
+      ansible.builtin.assert:
+        that: cfg1.stat.exists and cfg1.stat.size != 0
+
+    - name: Ensure process is running
+      ansible.builtin.command: pgrep -u _caldera python
+      register: ps1
+      changed_when: false
+      failed_when: false
+    - name: Validate ps output
+      ansible.builtin.assert:
+        that: ps1.stdout
+      when:
+        - not is_container|bool
+
+    - name: Ensure ports are listening
+      ansible.builtin.wait_for:
+        host: "{{ item.h }}"
+        port: "{{ item.p }}"
+        timeout: 10
+      with_items: "{{ ports }}"
+      when:
+        - not is_container|bool
+
+    - name: Fetch localhost endpoint
+      ansible.builtin.uri:
+        url: "{{ url }}"
+        validate_certs: no
+        return_content: yes
+      register: web
+      failed_when: false
+    - name: Validate localhost endpoint
+      ansible.builtin.assert:
+        that:
+          - web.status == 200
+          - "'<title>Magma | Caldera</title>' in web.content"
+      when:
+        - not is_container|bool
+
+    - name: Fetch API endpoint
+      ansible.builtin.uri:
+        url: "{{ api_url }}"
+        validate_certs: no
+        return_content: yes
+        follow_redirects: none
+      register: web2
+      failed_when: false
+    - name: Validate API endpoint
+      ansible.builtin.assert:
+        that:
+          # redirect /login?
+          - web2.status == 302
+      when:
+        - not is_container|bool
+
+    - name: Check no errors in journalctl
+      ansible.builtin.command:
+        cmd: journalctl -xeu caldera -g error --since today
+      become: true
+      register: log1
+      changed_when: false
+      failed_when: false
+    - name: Validate log1
+      ansible.builtin.assert:
+        that: log1.rc != 0
+      when:
+        - not is_container|bool
