@@ -7,12 +7,6 @@
   register: pkg_result
   until: pkg_result is success
 
-- name: RedHat | install pip with setuptools
-  ansible.builtin.command: "{{ easy_install }} pip"
-  args:
-    creates: "{{ pip }}"
-  when: ansible_os_family == 'RedHat'
-
 - name: Ensure caldera user exists
   ansible.builtin.user:
     name: "{{ caldera_user }}"

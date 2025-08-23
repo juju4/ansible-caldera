@@ -8,6 +8,8 @@ caldera_pkg:
   - git-core
   - libffi-dev
   - libssl-dev
+  - libxml2-dev
+  - libxslt-dev
   - acl
   - npm
 
