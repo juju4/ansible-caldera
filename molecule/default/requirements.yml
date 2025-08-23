@@ -2,3 +2,11 @@
 
 collections:
   - ansible.posix
+
+roles:
+  - src: https://github.com/juju4/ansible-redhat-epel/
+    version: main
+    name: juju4.redhat_epel
+  - src: https://github.com/juju4/ansible-golang/
+    version: main
+    name: juju4.golang
