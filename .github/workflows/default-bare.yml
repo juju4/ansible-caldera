@@ -36,7 +36,7 @@ jobs:
       ANSIBLE_CALLBACKS_ENABLED: profile_tasks
       ANSIBLE_EXTRA_VARS: ""
       ANSIBLE_ROLE: juju4.caldera
-      ANSIBLE_SUITE: ${{ suite }}
+      ANSIBLE_SUITE: ${{ matrix.suite }}
 
     steps:
       - name: Checkout code
