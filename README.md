@@ -1,33 +1,33 @@
-[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
-# DEPRECATED/LOOKING FOR MAINTAINERS -> archived
-
-[![Build Status - Master](https://travis-ci.org/juju4/ansible-caldera.svg?branch=master)](https://travis-ci.org/juju4/ansible-caldera)
-[![Build Status - Devel](https://travis-ci.org/juju4/ansible-caldera.svg?branch=devel)](https://travis-ci.org/juju4/ansible-caldera/branches)
 # CALDERA automated adversary emulation system
+
+[![Build Status - Main](https://travis-ci.org/juju4/ansible-caldera.svg?branch=main)](https://travis-ci.org/juju4/ansible-caldera)
+[![Build Status - Devel](https://travis-ci.org/juju4/ansible-caldera.svg?branch=devel)](https://travis-ci.org/juju4/ansible-caldera/branches)
 
 Ansible role to setup MITRE CALDERA automated adversary emulation system
 
-https://github.com/mitre/caldera
+* <https://github.com/mitre/caldera>
+* <https://caldera.readthedocs.io/en/latest/index.html>
 
-Default interface on https://localhost:8888 (admin / caldera)
+Default interface on <https://localhost:8888> (users red and blue with randomly generated password in /var/_caldera/caldera/conf/local.yml)
 
 ## Requirements & Dependencies
 
 ### Ansible
-It was tested on the following versions:
- * 2.4
+
+It was tested on the following versions: 2.18
 
 ### Operating systems
 
-Ubuntu 16.04 and Centos7
+Debian 13, 12, Ubuntu 24.04, 22.04 and RedHat 9, 10.
 
 ## Example Playbook
 
 Just include this role in your list.
 For example
 
-```
-- host: all
+```yaml
+- name: Play
+  host: all
   roles:
     - juju4.caldera
 ```
@@ -42,22 +42,32 @@ This role has a travis basic test (for github), more advanced with kitchen and a
 Default kitchen config (.kitchen.yml) is lxd-based, while (.kitchen.vagrant.yml) is vagrant/virtualbox based.
 
 Once you ensured all necessary roles are present, You can test with:
+
+```shell
+gem install kitchen-ansible kitchen-lxd_cli kitchen-sync kitchen-vagrant
+cd /path/to/roles/juju4.caldera
+kitchen verify
+kitchen login
+KITCHEN_YAML=".kitchen.vagrant.yml" kitchen verify
 ```
-$ gem install kitchen-ansible kitchen-lxd_cli kitchen-sync kitchen-vagrant
-$ cd /path/to/roles/juju4.caldera
-$ kitchen verify
-$ kitchen login
-$ KITCHEN_YAML=".kitchen.vagrant.yml" kitchen verify
-```
+
 or
+
+```shell
+cd /path/to/roles/juju4.caldera/test/vagrant
+vagrant up
+vagrant ssh
 ```
-$ cd /path/to/roles/juju4.caldera/test/vagrant
-$ vagrant up
-$ vagrant ssh
+
+or
+
+```shell
+pip install molecule docker
+molecule test
+MOLECULE_DISTRO=ubuntu:24.04 molecule test --destroy=never
 ```
 
 ## Troubleshooting & Known issues
-
 
 ## License
 
