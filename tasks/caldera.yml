@@ -7,9 +7,6 @@
   register: pkg_result
   until: pkg_result is success
 
-- name: Import upx
-  ansible.builtin.import_tasks: upx.yml
-
 - name: RedHat | install pip with setuptools
   ansible.builtin.command: "{{ easy_install }} pip"
   args:
@@ -20,6 +17,9 @@
   ansible.builtin.user:
     name: "{{ caldera_user }}"
     home: "{{ caldera_home }}"
+
+- name: Import upx
+  ansible.builtin.import_tasks: upx.yml
 
 - name: Ensure recent pip & setuptools in virtualenv
   ansible.builtin.pip:
