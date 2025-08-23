@@ -1,0 +1,87 @@
+---
+name: lint
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+    env:
+      ANSIBLE_CALLBACKS_ENABLED: profile_tasks
+      ANSIBLE_EXTRA_VARS: ""
+      ANSIBLE_ROLE: juju4.caldera
+      SUITE: default
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # tag=v5.0.0
+        with:
+          path: ${{ env.ANSIBLE_ROLE }}
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # tag=v5.6.0
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install --pre ansible-lint flake8 yamllint
+          which ansible
+          pip3 install ansible
+          pip3 show ansible
+          ls -l $HOME/.local/bin || true
+          ansible --version
+          cd $GITHUB_WORKSPACE/$ANSIBLE_ROLE
+          [ -f molecule/${SUITE}/requirements.yml ] && ansible-galaxy install -r molecule/${SUITE}/requirements.yml
+          { echo '[defaults]'; echo 'callbacks_enabled = profile_tasks, timer'; echo 'roles_path = ../:/home/runner/.ansible/roles'; echo 'ansible_python_interpreter: /usr/bin/python3'; } >> ansible.cfg
+      - name: Fetch central settings repository
+        run: |
+          export settings_repo="https://raw.githubusercontent.com/juju4/ansible-ci-settings/main"
+          cd $GITHUB_WORKSPACE/$ANSIBLE_ROLE
+          set -x
+          curl -o requirements.txt "$settings_repo/requirements.txt"
+          curl -o .ansible-lint "$settings_repo/.ansible-lint"
+          curl -o .yamllint "$settings_repo/.yamllint"
+          pip install -r requirements.txt
+        continue-on-error: true
+      - name: Environment
+        run: |
+          pwd
+          env
+          find . -ls
+      - uses: codespell-project/actions-codespell@master
+        with:
+          ignore_words_file: ${{ env.ANSIBLE_ROLE }}/.codespellignore
+          skip: .git
+          path: ${{ env.ANSIBLE_ROLE }}
+        if: ${{ always() }}
+      - name: yamllint
+        run: |
+          cd $GITHUB_WORKSPACE/$ANSIBLE_ROLE && yamllint .
+        if: ${{ always() }}
+      - name: ansible-lint
+        run: |
+          cd $GITHUB_WORKSPACE/$ANSIBLE_ROLE && ansible-lint
+        if: ${{ always() }}
+      - name: TruffleHog OSS check
+        uses: trufflesecurity/trufflehog@6641d4ba5b684fffe195b9820345de1bf19f3181
+        with:
+          path: ${{ env.ANSIBLE_ROLE }}
+          extra_args: --debug --only-verified
+        if: ${{ always() }}
+      - name: Run Checkov action
+        id: checkov
+        uses: bridgecrewio/checkov-action@d1ecbbd991738bb77267c875eff09fe1f2c6e044
+        with:
+          directory: ${{ env.ANSIBLE_ROLE }}
+          soft_fail: true
+          download_external_modules: true
+          github_pat: ${{ secrets.GH_PAT }}

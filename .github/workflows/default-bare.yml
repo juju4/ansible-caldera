@@ -1,0 +1,143 @@
+---
+name: default-bare
+
+on:
+  push:
+  pull_request:
+  schedule:  # run weekly, every Thursday 01:00
+    - cron: '0 1 * * 4'
+
+permissions: {}
+
+jobs:
+  build:
+    permissions:
+      contents: read
+    runs-on: ${{ matrix.distribution }}-${{ matrix.version }}
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        include:
+          - distribution: ubuntu
+            version: '24.04'
+            experimental: false
+          - distribution: ubuntu
+            version: '22.04'
+            experimental: false
+    env:
+      ANSIBLE_CALLBACKS_ENABLED: profile_tasks
+      ANSIBLE_EXTRA_VARS: ""
+      ANSIBLE_ROLE: juju4.caldera
+      ANSIBLE_SUITE: default-nginx
+
+    steps:
+      - name: Checkout code
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # tag=v5.0.0
+        with:
+          path: ${{ env.ANSIBLE_ROLE }}
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # tag=v5.6.0
+        with:
+          python-version: '3.x'
+      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610  # tag=v3.9.1
+        with:
+          node-version: '14.x'
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install ansible-lint flake8 yamllint
+          which ansible
+          pip3 install ansible
+          pip3 show ansible
+          ls -l $HOME/.local/bin || true
+          ansible --version
+          cd $GITHUB_WORKSPACE/$ANSIBLE_ROLE
+          [ -f molecule/default/requirements.yml ] && ansible-galaxy install -r molecule/default/requirements.yml
+          { echo '[defaults]'; echo 'callback_whitelist = profile_tasks, timer'; echo 'roles_path = ../:/home/runner/.ansible/roles'; echo 'ansible_python_interpreter: /usr/bin/python3'; } >> ansible.cfg
+      - name: Environment
+        run: |
+          set -x
+          pwd
+          env
+          find . -ls
+      - name: Clean nodejs environment
+        run: |
+          set -x
+          dpkg -l | grep nodejs || true
+          ls -l /opt/hostedtoolcache/ || true
+          whereis node || true
+          whereis npm || true
+          ls -l /usr/local/bin/node* || true
+          node --version || true
+          npm --version || true
+          sudo rm -Rf /opt/hostedtoolcache/node/1[68]*
+          node --version || true
+      - name: run test
+        run: |
+          cd $GITHUB_WORKSPACE/$ANSIBLE_ROLE && ansible-playbook -i localhost, --connection=local --become -vvv molecule/${ANSIBLE_SUITE}/converge.yml ${ANSIBLE_EXTRA_VARS}
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+      - name: idempotency run
+        run: |
+          cd $GITHUB_WORKSPACE/$ANSIBLE_ROLE && ansible-playbook -i localhost, --connection=local --become -vvv molecule/${ANSIBLE_SUITE}/converge.yml ${ANSIBLE_EXTRA_VARS} | tee /tmp/idempotency.log | grep -q 'changed=0.*failed=0'  && (echo 'Idempotence test: pass' && exit 0)  || (echo 'Idempotence test: fail' && cat /tmp/idempotency.log && exit 0)
+      - name: On failure
+        run: |
+          systemctl -l --no-pager status
+          systemctl -l --no-pager --failed
+          ls -l /usr/bin/ | egrep '(python|pip|ansible)'
+          pip freeze
+          pip3 freeze
+          ip addr
+          cat /etc/resolv.conf
+          host www.google.com
+          ping -c 1 www.google.com || true
+          ping -c 1 8.8.8.8 || true
+        if: ${{ failure() }}
+        continue-on-error: true
+      - name: After script - ansible setup
+        run: |
+          ansible -i inventory --connection=local -m setup localhost
+        if: ${{ always() }}
+        continue-on-error: true
+      - name: After script - systemd
+        run: |
+          systemctl -l --no-pager status caldera || true
+          systemctl -l --no-pager status nginx || true
+          systemd-analyze --no-pager security || true
+          systemd-analyze --no-pager security caldera || true
+          systemd-analyze --no-pager verify caldera || true
+          rsyslogd -v
+        if: ${{ always() }}
+        continue-on-error: true
+      - name: After script - etc
+        run: |
+          set -x
+          cat /etc/systemd/system/caldera.service
+          cat /var/_caldera/caldera/conf/local.yml
+        if: ${{ always() }}
+        continue-on-error: true
+      - name: After script - npm
+        run: |
+          cd /var/_caldera/caldera
+          set -x
+          sudo -u _caldera npm outdated || true
+          sudo -u _caldera npm audit || true
+          sudo -u _caldera yarn audit || true
+        if: ${{ always() }}
+        continue-on-error: true
+      - name: After script - curl
+        run: |
+          set -x
+          curl -vkL https://localhost
+          curl -vk https://localhost/api/rest
+        if: ${{ always() }}
+        continue-on-error: true
+      - name: After script - journalctl
+        run: |
+          set -x
+          journalctl -xeu caldera -l --no-pager
+        if: ${{ always() }}
+        continue-on-error: true
