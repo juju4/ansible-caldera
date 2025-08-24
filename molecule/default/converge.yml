@@ -32,6 +32,12 @@
         update_cache: yes
         cache_valid_time: 3600
       when: ansible_os_family == "Debian"
+    - name: RedHat | Check available repositories
+      ansible.builtin.command:
+        cmd: dnf repolist --all
+      changed_when: false
+      when:
+        - ansible_os_family == 'RedHat'
     - name: Debug | var ansible_virtualization_type
       ansible.builtin.debug:
         var: ansible_virtualization_type
