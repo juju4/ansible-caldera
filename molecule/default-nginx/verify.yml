@@ -35,7 +35,8 @@
       ansible.builtin.set_fact:
         bin_mode: '0644'
       when:
-        - ansible_distribution == 'Debian'
+        - ansible_distribution == 'Debian' or
+          ansible_os_family == 'RedHat'
   tasks:
 
     - name: Check caldera binary
