@@ -69,6 +69,10 @@ MOLECULE_DISTRO=ubuntu:24.04 molecule test --destroy=never
 
 ## Troubleshooting & Known issues
 
+* Debian-13 experimental because of lxml python-3.13 build issue `error: too few arguments to function '_PyLong_AsByteArray'`
+  * <https://github.com/mixxxdj/mixxx/issues/13949>
+  * <https://github.com/python/cpython/issues/131354>
+
 ## License
 
 BSD 2-clause
