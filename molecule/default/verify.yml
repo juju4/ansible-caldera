@@ -38,6 +38,13 @@
           ansible_os_family == 'RedHat'
   tasks:
 
+    - name: RedHat | Check available repositories
+      ansible.builtin.command:
+        cmd: dnf repolist --all
+      changed_when: false
+      when:
+        - ansible_os_family == 'RedHat'
+
     - name: Check caldera binary
       ansible.builtin.stat:
         path: "{{ caldera_bin }}"
