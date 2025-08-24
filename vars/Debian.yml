@@ -12,5 +12,6 @@ caldera_pkg:
   - libxslt-dev
   - acl
   - npm
+  - xz-utils
 
 python: python3

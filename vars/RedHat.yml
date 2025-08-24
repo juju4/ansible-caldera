@@ -13,6 +13,7 @@ caldera_pkg:
   - libxslt-devel
   - acl
   - initscripts
+  - xz
 
 python: python3
 pip: /usr/bin/pip3
