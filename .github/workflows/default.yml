@@ -25,6 +25,9 @@ jobs:
           - molecule_distro: 'almalinux:10-kitten'
             experimental: true
             suite: default
+          - molecule_distro: 'rockylinux:10'
+            experimental: true
+            suite: default
           - molecule_distro: 'rockylinux:9'
             experimental: false
             suite: default
