@@ -1,7 +1,7 @@
 # CALDERA automated adversary emulation system
 
-[![Build Status - Main](https://travis-ci.org/juju4/ansible-caldera.svg?branch=main)](https://travis-ci.org/juju4/ansible-caldera)
-[![Build Status - Devel](https://travis-ci.org/juju4/ansible-caldera.svg?branch=devel)](https://travis-ci.org/juju4/ansible-caldera/branches)
+[![Actions Status - Main](https://github.com/juju4/ansible-caldera/workflows/AnsibleCI/badge.svg)](https://github.com/juju4/ansible-caldera/actions?query=branch%3Amain)
+[![Actions Status - Devel](https://github.com/juju4/ansible-caldera/workflows/AnsibleCI/badge.svg?branch=devel)](https://github.com/juju4/ansible-caldera/actions?query=branch%3Adevel)
 
 Ansible role to setup MITRE CALDERA automated adversary emulation system
 
