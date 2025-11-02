@@ -1,7 +1,7 @@
 ---
 
-# 5.3.0
-caldera_version: b24f6e7a99cab19cbf417009bda9b9c6c81abc31
+# renovate: datasource=github-releases depName=mitre/caldera
+caldera_version: 'b24f6e7a99cab19cbf417009bda9b9c6c81abc31'
 # caldera_version: HEAD
 caldera_repo_update: false
 caldera_user: _caldera
