@@ -1,13 +1,13 @@
 ---
 
-- name: Debug | ansible_service_mgr
+- name: Debug | ansible_facts['service_mgr']
   ansible.builtin.debug:
-    var: ansible_service_mgr
+    var: ansible_facts['service_mgr']
 
 - name: Systemd
   when: >
-    (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int >= 16) or
-    (ansible_os_family == "RedHat" and ansible_distribution_major_version|int >= 7)
+    (ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_major_version']|int >= 16) or
+    (ansible_facts['os_family'] == "RedHat" and ansible_facts['distribution_major_version']|int >= 7)
   block:
     - name: Install systemd configuration
       ansible.builtin.template:
@@ -37,4 +37,4 @@
   args:
     chdir: "{{ caldera_rootdir }}"
   when:
-    - (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")
+    - (ansible_facts['virtualization_type'] is defined and ansible_facts['virtualization_type'] == "docker")
