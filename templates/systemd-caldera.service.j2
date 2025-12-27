@@ -12,7 +12,7 @@ Restart=always
 RestartSec=10
 SyslogIdentifier=caldera
 User={{ caldera_user }}
-{% if ansible_os_family == 'RedHat' %}
+{% if ansible_facts['os_family'] == 'RedHat' %}
 Group=nobody
 {% else %}
 Group=nogroup
@@ -87,8 +87,8 @@ CapabilityBoundingSet=~CAP_SYS_PTRACE
 CapabilityBoundingSet=~CAP_SYS_RAWIO
 CapabilityBoundingSet=~CAP_SYS_TTY_CONFIG
 
-{% if not (ansible_virtualization_type is defined and
-          ansible_virtualization_type == "docker"
+{% if not (ansible_facts['virtualization_type'] is defined and
+          ansible_facts['virtualization_type'] == "docker"
         )
 %}
 SystemCallFilter=@system-service
