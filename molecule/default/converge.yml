@@ -41,5 +41,10 @@
     - name: Debug | var ansible_facts['virtualization_type']
       ansible.builtin.debug:
         var: ansible_facts['virtualization_type']
+    - name: Ubuntu 26.04 | Set fact
+      ansible.builtin.set_fact:
+        # for recent lxml
+        caldera_version: '3735d9eb08685ef5a64f82042ad2107872386cf0'
+      when: (ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_major_version'] | int == 26)
   roles:
     - juju4.caldera
