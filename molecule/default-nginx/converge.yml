@@ -18,7 +18,6 @@
       - { p: "/etc/ssl/private/{{ hardenwebserver_target_host_cn }}.key", perm: r }
       - { p: "/etc/ssl/certs/{{ hardenwebserver_target_host_cn }}.crt", perm: r }
     hardenwebserver_header_csp: "default-src 'none'; script-src 'self' 'report-sample'; connect-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests; report-uri /csp/report.php;"
-    nodejs_version: 24.x
   pre_tasks:
     - name: Ubuntu | Install python3
       ansible.builtin.raw: test -e /usr/bin/python3 || (apt -y update && apt install -y python3-minimal)
@@ -48,6 +47,5 @@
       ansible.builtin.debug:
         var: ansible_facts['virtualization_type']
   roles:
-    - geerlingguy.nodejs
     - juju4.caldera
     - juju4.harden_nginx
