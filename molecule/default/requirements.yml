@@ -10,3 +10,6 @@ roles:
   - src: https://github.com/juju4/ansible-golang/
     version: main
     name: juju4.golang
+  - name: geerlingguy.nodejs
+    src: https://github.com/juju4/ansible-role-nodejs/
+    version: devel

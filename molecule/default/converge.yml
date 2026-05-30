@@ -7,6 +7,8 @@
     https_proxy: "{{ lookup('env', 'https_proxy') }}"
     no_proxy: "{{ lookup('env', 'no_proxy') }}"
   remote_user: root
+  vars:
+    nodejs_version: 24.x
   pre_tasks:
     - name: Ubuntu | Install python3
       ansible.builtin.raw: test -e /usr/bin/python3 || (apt -y update && apt install -y python3-minimal)
@@ -42,4 +44,5 @@
       ansible.builtin.debug:
         var: ansible_facts['virtualization_type']
   roles:
+    - geerlingguy.nodejs
     - juju4.caldera
