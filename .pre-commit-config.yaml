@@ -77,7 +77,7 @@ repos:
         files: ''
       - id: gitleaks
         name: Gitleaks
-        entry: bash -c 'gitleaks detect --source . -v'
+        entry: bash -c 'gitleaks detect --config gitleaks.toml --source . -v'
         language: system
         stages: ["pre-commit", "pre-push"]
       - id: trufflehog
