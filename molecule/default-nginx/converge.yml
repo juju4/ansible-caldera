@@ -17,6 +17,8 @@
     hardenwebserver_systemd_files_acl:
       - { p: "/etc/ssl/private/{{ hardenwebserver_target_host_cn }}.key", perm: r }
       - { p: "/etc/ssl/certs/{{ hardenwebserver_target_host_cn }}.crt", perm: r }
+      - { p: "/var/log/nginx/caldera.access.log", perm: rw }
+      - { p: "/var/log/nginx/caldera.error.log", perm: rw }
     hardenwebserver_header_csp: "default-src 'none'; script-src 'self' 'report-sample'; connect-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests; report-uri /csp/report.php;"
   pre_tasks:
     - name: Ubuntu | Install python3
