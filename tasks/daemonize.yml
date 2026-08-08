@@ -5,9 +5,8 @@
     var: ansible_facts['service_mgr']
 
 - name: Systemd
-  when: >
-    (ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_major_version']|int >= 16) or
-    (ansible_facts['os_family'] == "RedHat" and ansible_facts['distribution_major_version']|int >= 7)
+  when:
+    - ansible_facts['service_mgr'] == 'systemd'
   block:
     - name: Install systemd configuration
       ansible.builtin.template:
@@ -37,4 +36,4 @@
   args:
     chdir: "{{ caldera_rootdir }}"
   when:
-    - (ansible_facts['virtualization_type'] is defined and ansible_facts['virtualization_type'] == "docker")
+    - is_container | bool
