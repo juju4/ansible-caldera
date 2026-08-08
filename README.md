@@ -3,9 +3,10 @@
 [![Actions Status - Main](https://github.com/juju4/ansible-caldera/workflows/AnsibleCI/badge.svg)](https://github.com/juju4/ansible-caldera/actions?query=branch%3Amain)
 [![Actions Status - Devel](https://github.com/juju4/ansible-caldera/workflows/AnsibleCI/badge.svg?branch=devel)](https://github.com/juju4/ansible-caldera/actions?query=branch%3Adevel)
 
-Ansible role to setup MITRE CALDERA automated adversary emulation system
+Ansible role to setup MITRE CALDERA automated adversary emulation system.
+Since May 2026, it has been [passed to Apache Incubator](https://www.mitre.org/news-insights/news-release/mitre-contributes-caldera-apache-incubator-expand-open-cybersecurity).
 
-* <https://github.com/mitre/caldera>
+* <https://github.com/apache/caldera>
 * <https://caldera.readthedocs.io/en/latest/index.html>
 
 Default interface on <https://localhost:8888> (users red and blue with randomly generated password in /var/_caldera/caldera/conf/local.yml)
