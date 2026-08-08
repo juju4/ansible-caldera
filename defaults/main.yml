@@ -1,6 +1,6 @@
 ---
 
-# renovate: datasource=github-releases depName=mitre/caldera
+# renovate: datasource=github-releases depName=apache/caldera
 caldera_version: 'b24f6e7a99cab19cbf417009bda9b9c6c81abc31'
 # caldera_version: HEAD
 caldera_repo_update: false
