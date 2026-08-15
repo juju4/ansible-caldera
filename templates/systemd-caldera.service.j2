@@ -34,13 +34,15 @@ PrivateUsers=yes
 
 UMask=077
 
-InaccessiblePaths=/proc
+# Failed to set up user namespacing: No such file or directory
+# Failed at step USER spawning /var/_caldera/env-caldera/bin/python: No such file or directory
+# InaccessiblePaths=/proc
 RemoveIPC=true
 
 ProtectKernelTunables=true
 ProtectKernelModules=yes
 ProtectKernelLogs=yes
-ProtectHostname=yes
+# ProtectHostname=yes
 ProtectClock=yes
 ProtectControlGroups=yes
 
