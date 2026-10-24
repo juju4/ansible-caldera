@@ -21,11 +21,11 @@ jobs:
       matrix:
         include:
           - distribution: ubuntu
-            version: '24.04'
+            version: '26.04'
             experimental: false
             suite: default
           - distribution: ubuntu
-            version: '22.04'
+            version: '24.04'
             experimental: false
             suite: default
           - distribution: ubuntu
@@ -46,7 +46,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
         with:
-          python-version: '3.x'
+          python-version: '3.14'
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020  # v7.0.0
         with:
           node-version: '24.x'
